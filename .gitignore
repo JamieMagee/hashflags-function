@@ -155,7 +155,7 @@ publish/
 # TODO: Uncomment the next line to ignore your web deploy settings.
 # By default, sensitive information, such as encrypted password
 # should be stored in the .pubxml.user file.
-#*.pubxml
+*.pubxml
 *.pubxml.user
 *.publishproj
 
