@@ -27,7 +27,7 @@ namespace hashflags
 
             var doc = new HtmlDocument();
             doc.LoadHtml(content);
-        
+
             var initDataInput = doc.DocumentNode.SelectSingleNode("//*[@id=\"init-data\"]");
             var initDataJson = WebUtility.HtmlDecode(initDataInput.GetAttributeValue("value", ""));
             var initData = JObject.Parse(initDataJson);
