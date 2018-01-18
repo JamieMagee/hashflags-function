@@ -8,15 +8,17 @@ using Microsoft.Azure.WebJobs.Host;
 using Microsoft.WindowsAzure.Storage.Blob;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Text;
 
 namespace hashflags
 {
     public static class ActiveHashflags
     {
         [FunctionName("ActiveHashflags")]
+        [StorageAccount("AzureWebJobsStorage")]
         public static void Run(
             [TimerTrigger("0 0 * * * *")]TimerInfo timer,
-            [Blob("json/activeHashflags", FileAccess.ReadWrite, Connection = "AzureWebJobsStorage")] CloudBlockBlob blob,
+            [Blob("json/activeHashflags", FileAccess.Write] CloudBlockBlob blob,
             TraceWriter log)
         {
             log.Info($"Function executed at: {DateTime.Now}");
@@ -40,7 +42,7 @@ namespace hashflags
                 );
 
             blob.Properties.ContentType = "application/json";
-            blob.UploadText(hashflags.ToString(Formatting.None), System.Text.Encoding.UTF8);
+            blob.UploadText(hashflags.ToString(Formatting.None), Encoding.UTF8);
         }
     }
 }
