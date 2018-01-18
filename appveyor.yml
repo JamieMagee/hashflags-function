@@ -16,3 +16,5 @@ deploy:
   password:
     secure: xWMNwBAWKa2yzTsOQoQ3PrA+8haHYcbv7r/fLMHY1+++7toyj3buVOLmuvtYuz1vIibqXr+y3mINKPeA7EzQtg==
   artifact: Functions
+  on:
+    branch: master

@@ -18,7 +18,7 @@ namespace hashflags
         [StorageAccount("AzureWebJobsStorage")]
         public static void Run(
             [TimerTrigger("0 0 * * * *")]TimerInfo timer,
-            [Blob("json/activeHashflags", FileAccess.Write] CloudBlockBlob blob,
+            [Blob("json/activeHashflags", FileAccess.Write)] CloudBlockBlob blob,
             TraceWriter log)
         {
             log.Info($"Function executed at: {DateTime.Now}");
