@@ -5,6 +5,7 @@ using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Drawing.Text;
 using System.IO;
+using System.Text.RegularExpressions;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Host;
 using Microsoft.WindowsAzure.Storage.Blob;
@@ -24,28 +25,37 @@ namespace hashflags
             log.Info($"Function executed at: {DateTime.Now}");
 
             var hashtag = '#' + hf.Key;
-            var font = new Font(new FontFamily("Calibri"), 100, FontStyle.Regular, GraphicsUnit.Pixel);
+            var isRtl = IsRtl(hf.Key);
 
-            Image img = new Bitmap(1, 1);
-            Graphics drawing = Graphics.FromImage(img);
-            //measure the string to see how big the image needs to be
-            SizeF textSize = drawing.MeasureString(hashtag, font, 800);
-
-            //set the stringformat flags to rtl
-            StringFormat sf = new StringFormat
+            var sf = new StringFormat
             {
-                //uncomment the next line for right to left languages
-                //sf.FormatFlags = StringFormatFlags.DirectionRightToLeft;
+                FormatFlags = isRtl ? StringFormatFlags.DirectionRightToLeft : 0,
                 Trimming = StringTrimming.Word
             };
-            //free up the dummy image and old graphics object
-            img.Dispose();
-            drawing.Dispose();
+            var img = new Bitmap(1024, 512);
+            var graphics = InitialiseGraphics(img);
+            Brush textBrush = new SolidBrush(Color.Black);
 
-            //create a new image of the right size
-            img = new Bitmap(1024, 512);
+            var font = new Font(new FontFamily("Calibri"), 72);
+            font = GetAdjustedFont(graphics, hashtag, font, 800, 72, 36);
 
-            drawing = Graphics.FromImage(img);
+            var textSize = graphics.MeasureString(hashtag, font);
+            var horizontalMargin = (1024 - textSize.Width) / 2;
+            var verticalMargin = (512 - textSize.Height) / 2;
+            graphics.DrawString(hashtag, font, textBrush, new RectangleF(horizontalMargin, verticalMargin, textSize.Width, textSize.Height), sf);
+
+            DrawHashFlag(ref graphics, hf.Value, isRtl, horizontalMargin, textSize, hashflagsContainer);
+
+            heroContainer.CreateIfNotExists();
+            var heroBlob = heroContainer.GetBlockBlobReference(hf.Key);
+            heroBlob.Properties.ContentType = "image/png";
+            heroBlob.UploadFromStream(ToStream(img, ImageFormat.Png));
+        }
+
+        private static Graphics InitialiseGraphics(Image img)
+        {
+            var drawing = Graphics.FromImage(img);
+
             //Adjust for high quality
             drawing.CompositingQuality = CompositingQuality.HighQuality;
             drawing.InterpolationMode = InterpolationMode.HighQualityBilinear;
@@ -56,30 +66,12 @@ namespace hashflags
             //paint the background
             drawing.Clear(Color.Transparent);
 
-            //create a brush for the text
-            Brush textBrush = new SolidBrush(Color.Black);
+            return drawing;
+        }
 
-            var horizontalMargin = (1024 - textSize.Width) / 2;
-            var verticalMargin = (512 - textSize.Height) / 2;
-            drawing.DrawString(hashtag, font, textBrush, new RectangleF(horizontalMargin, verticalMargin, textSize.Width, textSize.Height), sf);
-
-            using (var stream = new MemoryStream())
-            {
-                hashflagsContainer.GetBlockBlobReference(hf.Value).DownloadToStream(stream);
-                var hashflagImage = Image.FromStream(stream);
-                drawing.DrawImage(hashflagImage, new RectangleF(horizontalMargin + textSize.Width, 220, hashflagImage.Width, hashflagImage.Height));
-            }
-
-            drawing.Save();
-
-            textBrush.Dispose();
-            drawing.Dispose();
-
-            heroContainer.CreateIfNotExists();
-            var heroBlob = heroContainer.GetBlockBlobReference(hf.Key);
-            heroBlob.Properties.ContentType = "image/png";
-            heroBlob.UploadFromStream(ToStream(img, ImageFormat.Png));
-            img.Dispose();
+        private static bool IsRtl(string text)
+        {
+            return new Regex(@"\p{IsArabic}|\p{IsHebrew}").IsMatch(text);
         }
 
         private static Stream ToStream(Image image, ImageFormat format)
@@ -88,6 +80,48 @@ namespace hashflags
             image.Save(stream, format);
             stream.Position = 0;
             return stream;
+        }
+
+        private static Font GetAdjustedFont(Graphics graphics, string hashtag, Font originalFont, int maxWidth, int maxFontSize, int minFontSize)
+        {
+            // We utilize MeasureString which we get via a control instance           
+            for (var adjustedSize = maxFontSize; adjustedSize >= minFontSize; adjustedSize--)
+            {
+                var testFont = new Font(originalFont.Name, adjustedSize, originalFont.Style);
+
+                // Test the string with the new size
+                var adjustedSizeNew = graphics.MeasureString(hashtag, testFont);
+
+                if (maxWidth > Convert.ToInt32(adjustedSizeNew.Width))
+                {
+                    // Good font, return it
+                    return testFont;
+                }
+            }
+            return new Font(originalFont.Name, minFontSize, originalFont.Style);
+        }
+
+        private static void DrawHashFlag(ref Graphics graphics, string hashtagPath, bool isRtl, float horizontalMargin, SizeF textSize, CloudBlobContainer hashflagsContainer)
+        {
+            using (var stream = new MemoryStream())
+            {
+                hashflagsContainer.GetBlockBlobReference(hashtagPath).DownloadToStream(stream);
+                var hashflagImage = Image.FromStream(stream);
+
+                float xCoord;
+                var yCoord = (512 - hashflagImage.Height) / 2;
+
+                if (isRtl)
+                {
+                   xCoord = horizontalMargin - hashflagImage.Width;
+                }
+                else
+                {
+                    xCoord = horizontalMargin + textSize.Width;
+                }
+
+                graphics.DrawImage(hashflagImage, new RectangleF(xCoord, yCoord, hashflagImage.Width, hashflagImage.Height));
+            }
         }
     }
 }

@@ -19,8 +19,8 @@ namespace hashflags
             [TimerTrigger("0 0 * * * *")] TimerInfo timer,
             [Blob("json/activeHashflags", FileAccess.ReadWrite)] CloudBlockBlob initDataBlob,
             [Table("hashflags", "active")] CloudTable table,
-            [Queue("save-hashflags")] ICollector<KeyValuePair<string, string>> collector,
-            [Queue("create-hero")] ICollector<KeyValuePair<string, string>> collector2,
+            [Queue("save-hashflags")] ICollector<KeyValuePair<string, string>> saveHashflagsCollector,
+            [Queue("create-hero")] ICollector<KeyValuePair<string, string>> createHeroCollector,
             TraceWriter log)
         {
             log.Info($"Function executed at: {DateTime.Now}");
@@ -48,16 +48,16 @@ namespace hashflags
             {
                 log.Info($"NEW: {entry}");
                 var hf = activeHashflags.First(x => x.Key == entry);
-                InsertNew(hf, table, log);
-                collector.Add(hf);
-                collector2.Add(hf);
+                InsertNew(hf, table);
+                saveHashflagsCollector.Add(hf);
+                createHeroCollector.Add(hf);
             }
         }
 
         private static void MovePartition(HashFlag hf, CloudTable table)
         {
             var delete = TableOperation.Delete(hf);
-            var insert = TableOperation.Insert(new HashFlag()
+            var insert = TableOperation.Insert(new HashFlag
             {
                 PartitionKey = "inactive",
                 RowKey = hf.RowKey,
@@ -71,7 +71,7 @@ namespace hashflags
             table.Execute(insert);
         }
 
-        private static void InsertNew(KeyValuePair<string, string> hf, CloudTable table, TraceWriter log)
+        private static void InsertNew(KeyValuePair<string, string> hf, CloudTable table)
         {
             var insert = TableOperation.Insert(new HashFlag
             {
@@ -80,7 +80,7 @@ namespace hashflags
                 HashTag = hf.Key,
                 Path = hf.Value,
                 FirstSeen = DateTime.Now.Date,
-                LastSeen = DateTime.Now.Date,
+                LastSeen = DateTime.Now.Date
             });
 
             table.Execute(insert);
@@ -89,8 +89,8 @@ namespace hashflags
 
     public class HashFlag : TableEntity
     {
-        public String HashTag { get; set; }
-        public String Path { get; set; }
+        public string HashTag { get; set; }
+        public string Path { get; set; }
         public DateTime FirstSeen { get; set; }
         public DateTime LastSeen { get; set; }
     }
