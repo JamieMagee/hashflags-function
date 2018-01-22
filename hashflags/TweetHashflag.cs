@@ -26,6 +26,7 @@ namespace hashflags
 
             var queue = FetchQueue();
             var message = queue.GetMessage();
+            if (message == null) return;
             var messageDict = message.AsString.ConvertJsonTo<Dictionary<string, string>>();
             var hf = new KeyValuePair<string, string>(messageDict["Key"], messageDict["Value"]);
 
