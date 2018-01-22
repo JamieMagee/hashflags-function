@@ -66,7 +66,7 @@ namespace hashflags
             drawing.TextRenderingHint = TextRenderingHint.AntiAliasGridFit;
 
             //paint the background
-            drawing.Clear(Color.Transparent);
+            drawing.Clear(Color.White);
 
             return drawing;
         }
