@@ -18,7 +18,7 @@ namespace hashflags
         public static void Run(
             [TimerTrigger("0 0 * * * *")] TimerInfo timer,
             [Blob("json/activeHashflags", FileAccess.ReadWrite)] CloudBlockBlob initDataBlob,
-            [Table("hashflags", "active")] CloudTable table,
+            [Table("hashflags")] CloudTable table,
             [Queue("save-hashflags")] ICollector<KeyValuePair<string, string>> saveHashflagsCollector,
             TraceWriter log)
         {
