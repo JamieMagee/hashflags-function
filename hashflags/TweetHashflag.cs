@@ -7,7 +7,6 @@ using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
 using Microsoft.WindowsAzure.Storage.Queue;
 using Tweetinvi;
-using Tweetinvi.Logic;
 using Tweetinvi.Models;
 using Tweetinvi.Parameters;
 using User = Tweetinvi.User;
@@ -37,13 +36,10 @@ namespace hashflags
             {
                 var hashflagBlob = heroContainer.GetBlockBlobReference(hf.Key);
                 hashflagBlob.DownloadToStream(stream);
-                media = Auth.ExecuteOperationWithCredentials(authenticatedUser.Credentials, () =>
-                {
-                    return Upload.UploadImage(stream.ToArray());
-                });
+                media = Auth.ExecuteOperationWithCredentials(authenticatedUser.Credentials, () => Upload.UploadImage(stream.ToArray()));
             }
 
-            var tweet = authenticatedUser.PublishTweet('#' + hf.Key, new PublishTweetOptionalParameters
+            authenticatedUser.PublishTweet('#' + hf.Key, new PublishTweetOptionalParameters
             {
                 Medias = new List<IMedia> { media }
             });
