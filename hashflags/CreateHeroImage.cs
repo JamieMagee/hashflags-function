@@ -35,7 +35,8 @@ namespace hashflags
             };
             var img = new Bitmap(1024, 512);
             var graphics = InitialiseGraphics(img);
-            Brush textBrush = new SolidBrush(Color.FromArgb(20, 23, 26));
+            var textBrush = new SolidBrush(Color.FromArgb(29, 161, 242));
+            var watermarkBrush = new SolidBrush(Color.FromArgb(20, 23, 26));
 
             var font = new Font(new FontFamily("Segoe UI"), 72);
             font = GetAdjustedFont(graphics, hashtag, font, 800, 72, 36);
@@ -44,6 +45,9 @@ namespace hashflags
             var horizontalMargin = (1024 - textSize.Width) / 2;
             var verticalMargin = (512 - textSize.Height) / 2;
             graphics.DrawString(hashtag, font, textBrush, new RectangleF(horizontalMargin, verticalMargin, textSize.Width, textSize.Height), sf);
+            // Watermark
+            //graphics.DrawString("@JamieMagee", font, watermarkBrush, new RectangleF(), sf);
+
 
             DrawHashFlag(ref graphics, hf.Value, isRtl, horizontalMargin, textSize, hashflagsContainer);
 
@@ -67,7 +71,6 @@ namespace hashflags
 
             //paint the background
             drawing.Clear(Color.White);
-
             return drawing;
         }
 
