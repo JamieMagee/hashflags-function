@@ -31,31 +31,16 @@ namespace hashflags
             var hf = new KeyValuePair<string, string>(messageDict["Key"], messageDict["Value"]);
 
             var authenticatedUser = InitialiseTwitter();
-            RateLimit.RateLimitTrackerMode = RateLimitTrackerMode.TrackOnly;
 
-            TweetinviEvents.QueryBeforeExecute += (sender, args) =>
-            {
-                var queryRateLimits = RateLimit.GetQueryRateLimit(args.QueryURL);
-                // Some methods are not RateLimited. Invoking such a method will result in the queryRateLimits to be null
-                if (queryRateLimits != null)
-                {
-                    if (queryRateLimits.Remaining > 0)
-                    {
-                        // We have enough resource to execute the query
-                        return;
-                    }
-                    log.Info("Rate limited. Retry later");
-                    args.Cancel = true;
-                    return;
-                }
-            };
-
-            var hashflagBlob = heroContainer.GetBlockBlobReference(hf.Key);
             IMedia media;
             using (var stream = new MemoryStream())
             {
+                var hashflagBlob = heroContainer.GetBlockBlobReference(hf.Key);
                 hashflagBlob.DownloadToStream(stream);
-                media = Upload.UploadImage(stream.ToArray());
+                media = Auth.ExecuteOperationWithCredentials(authenticatedUser.Credentials, () =>
+                {
+                    return Upload.UploadImage(stream.ToArray());
+                });
             }
 
             var tweet = authenticatedUser.PublishTweet('#' + hf.Key, new PublishTweetOptionalParameters
@@ -65,14 +50,14 @@ namespace hashflags
             queue.DeleteMessage(message);
         }
 
-        private static AuthenticatedUser InitialiseTwitter()
+        private static IAuthenticatedUser InitialiseTwitter()
         {
             var consumerKey = GetEnvironmentVariable("CONSUMER_KEY");
             var consumerSecret = GetEnvironmentVariable("CONSUMER_SECRET");
             var accessToken = GetEnvironmentVariable("ACCESS_TOKEN");
             var accessTokenSecret = GetEnvironmentVariable("ACCESS_TOKEN_SECRET");
             var userCredentials = Auth.CreateCredentials(consumerKey, consumerSecret, accessToken, accessTokenSecret);
-            return User.GetAuthenticatedUser(userCredentials) as AuthenticatedUser;
+            return User.GetAuthenticatedUser(userCredentials);
         }
 
         private static string GetEnvironmentVariable(string name) => Environment.GetEnvironmentVariable(name);
