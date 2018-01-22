@@ -44,7 +44,8 @@ namespace hashflags
             var textSize = graphics.MeasureString(hashtag, font);
             var horizontalMargin = (1024 - textSize.Width) / 2;
             var verticalMargin = (512 - textSize.Height) / 2;
-            graphics.DrawString(hashtag, font, textBrush, new RectangleF(horizontalMargin, verticalMargin, textSize.Width, textSize.Height), sf);
+            graphics.DrawString(hashtag, font, textBrush,
+                new RectangleF(horizontalMargin, verticalMargin, textSize.Width, textSize.Height), sf);
             // Watermark
             //graphics.DrawString("@JamieMagee", font, watermarkBrush, new RectangleF(), sf);
 
@@ -87,7 +88,8 @@ namespace hashflags
             return stream;
         }
 
-        private static Font GetAdjustedFont(Graphics graphics, string hashtag, Font originalFont, int maxWidth, int maxFontSize, int minFontSize)
+        private static Font GetAdjustedFont(Graphics graphics, string hashtag, Font originalFont, int maxWidth,
+            int maxFontSize, int minFontSize)
         {
             // We utilize MeasureString which we get via a control instance           
             for (var adjustedSize = maxFontSize; adjustedSize >= minFontSize; adjustedSize--)
@@ -97,16 +99,14 @@ namespace hashflags
                 // Test the string with the new size
                 var adjustedSizeNew = graphics.MeasureString(hashtag, testFont);
 
-                if (maxWidth > Convert.ToInt32(adjustedSizeNew.Width))
-                {
-                    // Good font, return it
-                    return testFont;
-                }
+                if (maxWidth > Convert.ToInt32(adjustedSizeNew.Width)) return testFont;
             }
+
             return new Font(originalFont.Name, minFontSize, originalFont.Style);
         }
 
-        private static void DrawHashFlag(ref Graphics graphics, string hashtagPath, bool isRtl, float horizontalMargin, SizeF textSize, CloudBlobContainer hashflagsContainer)
+        private static void DrawHashFlag(ref Graphics graphics, string hashtagPath, bool isRtl, float horizontalMargin,
+            SizeF textSize, CloudBlobContainer hashflagsContainer)
         {
             using (var stream = new MemoryStream())
             {
@@ -117,15 +117,12 @@ namespace hashflags
                 var yCoord = (512 - hashflagImage.Height) / 2;
 
                 if (isRtl)
-                {
-                   xCoord = horizontalMargin - hashflagImage.Width;
-                }
+                    xCoord = horizontalMargin - hashflagImage.Width;
                 else
-                {
                     xCoord = horizontalMargin + textSize.Width;
-                }
 
-                graphics.DrawImage(hashflagImage, new RectangleF(xCoord, yCoord, hashflagImage.Width, hashflagImage.Height));
+                graphics.DrawImage(hashflagImage,
+                    new RectangleF(xCoord, yCoord, hashflagImage.Width, hashflagImage.Height));
             }
         }
     }

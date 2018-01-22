@@ -9,7 +9,6 @@ using Microsoft.WindowsAzure.Storage.Queue;
 using Tweetinvi;
 using Tweetinvi.Models;
 using Tweetinvi.Parameters;
-using User = Tweetinvi.User;
 
 namespace hashflags
 {
@@ -37,12 +36,13 @@ namespace hashflags
             {
                 var hashflagBlob = heroContainer.GetBlockBlobReference(hf.Key);
                 hashflagBlob.DownloadToStream(stream);
-                media = Auth.ExecuteOperationWithCredentials(authenticatedUser.Credentials, () => Upload.UploadImage(stream.ToArray()));
+                media = Auth.ExecuteOperationWithCredentials(authenticatedUser.Credentials,
+                    () => Upload.UploadImage(stream.ToArray()));
             }
 
             authenticatedUser.PublishTweet('#' + hf.Key, new PublishTweetOptionalParameters
             {
-                Medias = new List<IMedia> { media }
+                Medias = new List<IMedia> {media}
             });
             queue.DeleteMessage(message);
         }
@@ -57,7 +57,10 @@ namespace hashflags
             return User.GetAuthenticatedUser(userCredentials);
         }
 
-        private static string GetEnvironmentVariable(string name) => Environment.GetEnvironmentVariable(name);
+        private static string GetEnvironmentVariable(string name)
+        {
+            return Environment.GetEnvironmentVariable(name);
+        }
 
         private static CloudQueue FetchQueue()
         {

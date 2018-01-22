@@ -31,6 +31,7 @@ namespace hashflags
                 var image = client.DownloadData(new Uri(BaseUrl + hf.Value));
                 imageBlob.UploadFromByteArray(image, 0, image.Length);
             }
+
             createHeroCollector.Add(hf);
         }
     }

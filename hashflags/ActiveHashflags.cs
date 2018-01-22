@@ -2,13 +2,13 @@ using System;
 using System.IO;
 using System.Net;
 using System.Net.Http;
+using System.Text;
 using HtmlAgilityPack;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Host;
 using Microsoft.WindowsAzure.Storage.Blob;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System.Text;
 
 namespace hashflags
 {
@@ -18,7 +18,8 @@ namespace hashflags
         [StorageAccount("AzureWebJobsStorage")]
         public static void Run(
             [TimerTrigger("0 0 * * * *")] TimerInfo timer,
-            [Blob("json/activeHashflags", FileAccess.ReadWrite)] CloudBlockBlob blob,
+            [Blob("json/activeHashflags", FileAccess.ReadWrite)]
+            CloudBlockBlob blob,
             TraceWriter log)
         {
             log.Info($"Function executed at: {DateTime.Now}");
@@ -34,12 +35,12 @@ namespace hashflags
             var initDataJson = WebUtility.HtmlDecode(initDataInput.GetAttributeValue("value", ""));
             var initData = JObject.Parse(initDataJson);
 
-            log.Info($"There are currently {((JObject)initData["activeHashflags"]).Count} active hashflags");
+            log.Info($"There are currently {((JObject) initData["activeHashflags"]).Count} active hashflags");
 
             var hashflags = new JObject(
-                    new JProperty("hashflagBaseUrl", initData["hashflagBaseUrl"]),
-                    new JProperty("activeHashflags", initData["activeHashflags"])
-                );
+                new JProperty("hashflagBaseUrl", initData["hashflagBaseUrl"]),
+                new JProperty("activeHashflags", initData["activeHashflags"])
+            );
 
             blob.Properties.ContentType = "application/json";
             blob.UploadText(hashflags.ToString(Formatting.None), Encoding.UTF8);

@@ -17,7 +17,8 @@ namespace hashflags
         [StorageAccount("AzureWebJobsStorage")]
         public static void Run(
             [TimerTrigger("0 0 * * * *")] TimerInfo timer,
-            [Blob("json/activeHashflags", FileAccess.ReadWrite)] CloudBlockBlob initDataBlob,
+            [Blob("json/activeHashflags", FileAccess.ReadWrite)]
+            CloudBlockBlob initDataBlob,
             [Table("hashflags")] CloudTable table,
             [Queue("save-hashflags")] ICollector<KeyValuePair<string, string>> saveHashflagsCollector,
             TraceWriter log)
@@ -30,13 +31,14 @@ namespace hashflags
 
             table.CreateIfNotExists();
 
-            var tableQuery = new TableQuery<HashFlag>().Where(TableQuery.GenerateFilterCondition("PartitionKey", "eq", "active"));
+            var tableQuery =
+                new TableQuery<HashFlag>().Where(TableQuery.GenerateFilterCondition("PartitionKey", "eq", "active"));
             var previousHashflags = table.ExecuteQuery(tableQuery);
 
             var previousHashtags = previousHashflags.Select(x => x.HashTag);
             var currentHashtags = activeHashflags.Select(x => x.Key);
 
-            foreach(var entry in previousHashtags.Except(currentHashtags))
+            foreach (var entry in previousHashtags.Except(currentHashtags))
             {
                 log.Info($"INACTIVE: {entry}");
                 var hf = previousHashflags.First(x => x.HashTag == entry);
