@@ -20,6 +20,7 @@ namespace hashflags
             [QueueTrigger("create-hero")] KeyValuePair<string, string> hf,
             [Blob("heroimages")] CloudBlobContainer heroContainer,
             [Blob("hashflags")] CloudBlobContainer hashflagsContainer,
+            [Queue("tweet")] ICollector<KeyValuePair<string, string>> tweetCollector,
             TraceWriter log)
         {
             log.Info($"Function executed at: {DateTime.Now}");
@@ -50,6 +51,7 @@ namespace hashflags
             var heroBlob = heroContainer.GetBlockBlobReference(hf.Key);
             heroBlob.Properties.ContentType = "image/png";
             heroBlob.UploadFromStream(ToStream(img, ImageFormat.Png));
+            tweetCollector.Add(hf);
         }
 
         private static Graphics InitialiseGraphics(Image img)

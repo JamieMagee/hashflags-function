@@ -20,7 +20,6 @@ namespace hashflags
             [Blob("json/activeHashflags", FileAccess.ReadWrite)] CloudBlockBlob initDataBlob,
             [Table("hashflags", "active")] CloudTable table,
             [Queue("save-hashflags")] ICollector<KeyValuePair<string, string>> saveHashflagsCollector,
-            [Queue("create-hero")] ICollector<KeyValuePair<string, string>> createHeroCollector,
             TraceWriter log)
         {
             log.Info($"Function executed at: {DateTime.Now}");
@@ -50,7 +49,6 @@ namespace hashflags
                 var hf = activeHashflags.First(x => x.Key == entry);
                 InsertNew(hf, table);
                 saveHashflagsCollector.Add(hf);
-                createHeroCollector.Add(hf);
             }
         }
 
