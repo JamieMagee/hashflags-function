@@ -35,9 +35,9 @@ namespace hashflags
             };
             var img = new Bitmap(1024, 512);
             var graphics = InitialiseGraphics(img);
-            Brush textBrush = new SolidBrush(Color.Black);
+            Brush textBrush = new SolidBrush(Color.FromArgb(20, 23, 26));
 
-            var font = new Font(new FontFamily("Calibri"), 72);
+            var font = new Font(new FontFamily("Segoe UI"), 72);
             font = GetAdjustedFont(graphics, hashtag, font, 800, 72, 36);
 
             var textSize = graphics.MeasureString(hashtag, font);
