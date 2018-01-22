@@ -16,6 +16,7 @@ namespace hashflags
         public static void Run(
             [QueueTrigger("save-hashflags")] KeyValuePair<string, string> hf,
             [Blob("hashflags")] CloudBlobContainer hashflagsContainer,
+            [Queue("create-hero")] ICollector<KeyValuePair<string, string>> createHeroCollector,
             TraceWriter log)
         {
             log.Info($"Function executed at: {DateTime.Now}");
@@ -30,6 +31,7 @@ namespace hashflags
                 var image = client.DownloadData(new Uri(BaseUrl + hf.Value));
                 imageBlob.UploadFromByteArray(image, 0, image.Length);
             }
+            createHeroCollector.Add(hf);
         }
     }
 }
