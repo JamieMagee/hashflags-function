@@ -17,7 +17,7 @@ namespace hashflags
         [FunctionName("TweetHashflag")]
         [StorageAccount("AzureWebJobsStorage")]
         public static void Run(
-            [TimerTrigger("0 0 * * * *")] TimerInfo timer,
+            [TimerTrigger("0 * * * * *")] TimerInfo timer,
             [Blob("heroimages")] CloudBlobContainer heroContainer,
             TraceWriter log)
         {
