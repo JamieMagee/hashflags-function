@@ -31,23 +31,30 @@ namespace hashflags
             var sf = new StringFormat
             {
                 FormatFlags = isRtl ? StringFormatFlags.DirectionRightToLeft : 0,
-                Trimming = StringTrimming.Word
             };
-            var img = new Bitmap(1024, 512);
+            var imageWidth = 1200;
+            var imageHeight = 675;
+            var hashflagSize = 72;
+
+            var img = new Bitmap(imageWidth, imageHeight, PixelFormat.Format32bppArgb);
             var graphics = InitialiseGraphics(img);
             var textBrush = new SolidBrush(Color.FromArgb(29, 161, 242));
-            var watermarkBrush = new SolidBrush(Color.FromArgb(20, 23, 26));
+            var watermarkBrush = new SolidBrush(Color.FromArgb(127, 20, 23, 26));
 
             var font = new Font(new FontFamily("Segoe UI"), 72);
+            var watermarkFont = new Font(new FontFamily("Segoe UI"), 18);
             font = GetAdjustedFont(graphics, hashtag, font, 800, 72, 36);
 
             var textSize = graphics.MeasureString(hashtag, font);
-            var horizontalMargin = (1024 - textSize.Width) / 2;
-            var verticalMargin = (512 - textSize.Height) / 2;
+            var horizontalMargin = isRtl ? 
+                (imageWidth - textSize.Width + hashflagSize) / 2 :
+                (imageWidth - textSize.Width - hashflagSize) / 2;
+            var verticalMargin = (imageHeight - textSize.Height) / 2;
+
             graphics.DrawString(hashtag, font, textBrush,
                 new RectangleF(horizontalMargin, verticalMargin, textSize.Width, textSize.Height), sf);
             // Watermark
-            //graphics.DrawString("@JamieMagee", font, watermarkBrush, new RectangleF(), sf);
+            graphics.DrawString("@HashflagArchive", watermarkFont, watermarkBrush, 900, 575);
 
 
             DrawHashFlag(ref graphics, hf.Value, isRtl, horizontalMargin, textSize, hashflagsContainer);
@@ -55,7 +62,7 @@ namespace hashflags
             heroContainer.CreateIfNotExists();
             var heroBlob = heroContainer.GetBlockBlobReference(hf.Key);
             heroBlob.Properties.ContentType = "image/png";
-            heroBlob.UploadFromStream(ToStream(img, ImageFormat.Png));
+            heroBlob.UploadFromStream(ToStream(img));
             tweetCollector.Add(hf);
         }
 
@@ -72,6 +79,8 @@ namespace hashflags
 
             //paint the background
             drawing.Clear(Color.White);
+            //Draw transparent pixel at the top of the image, to prevent JPEG compression on upload
+            //drawing.FillRectangle(new SolidBrush(Color.FromArgb(1, 0, 0, 0)), 0, 0, 1200, 100);
             return drawing;
         }
 
@@ -80,10 +89,10 @@ namespace hashflags
             return new Regex(@"\p{IsArabic}|\p{IsHebrew}").IsMatch(text);
         }
 
-        private static Stream ToStream(Image image, ImageFormat format)
+        private static Stream ToStream(Image image)
         {
             var stream = new MemoryStream();
-            image.Save(stream, format);
+            image.Save(stream, ImageFormat.Png);
             stream.Position = 0;
             return stream;
         }
@@ -114,7 +123,7 @@ namespace hashflags
                 var hashflagImage = Image.FromStream(stream);
 
                 float xCoord;
-                var yCoord = (512 - hashflagImage.Height) / 2;
+                var yCoord = (675 - hashflagImage.Height) / 2;
 
                 if (isRtl)
                     xCoord = horizontalMargin - hashflagImage.Width;
