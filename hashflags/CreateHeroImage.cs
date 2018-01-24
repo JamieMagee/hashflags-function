@@ -30,11 +30,11 @@ namespace hashflags
 
             var sf = new StringFormat
             {
-                FormatFlags = isRtl ? StringFormatFlags.DirectionRightToLeft : 0,
+                FormatFlags = isRtl ? StringFormatFlags.DirectionRightToLeft : 0
             };
-            var imageWidth = 1200;
-            var imageHeight = 675;
-            var hashflagSize = 72;
+            const int imageWidth = 1200;
+            const int imageHeight = 675;
+            const int hashflagSize = 72;
 
             var img = new Bitmap(imageWidth, imageHeight, PixelFormat.Format32bppArgb);
             var graphics = InitialiseGraphics(img);
