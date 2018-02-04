@@ -16,7 +16,7 @@ namespace hashflags
         [FunctionName("UpdateHashflagState")]
         [StorageAccount("AzureWebJobsStorage")]
         public static void Run(
-            [TimerTrigger("0 5 * * * *")] TimerInfo timer,
+            [TimerTrigger("0 1 * * * *")] TimerInfo timer,
             [Blob("json/activeHashflags", FileAccess.ReadWrite)]
             CloudBlockBlob initDataBlob,
             [Table("hashflags")] CloudTable table,
