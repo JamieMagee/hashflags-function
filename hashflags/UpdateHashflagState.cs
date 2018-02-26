@@ -38,13 +38,8 @@ namespace hashflags
             var previousHashtags = previousHashflags.Select(x => x.HashTag);
             var currentHashtags = activeHashflags.Select(x => x.Key);
 
-            foreach(var entry in previousHashtags) {
-                log.Info(entry);
-            }
-
-            foreach(var entry in currentHashtags) {
-                log.Info(entry);
-            }
+            log.Info($"previous Hashtags: {previousHashtags.Count()}");
+            log.Info($"current Hashtags: {currentHashtags.Count()}");
 
 
             foreach (var entry in previousHashtags.Except(currentHashtags))
