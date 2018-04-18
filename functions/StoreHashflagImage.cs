@@ -19,7 +19,7 @@ namespace hashflags
         {
             log.Info($"Function executed at: {DateTime.Now}");
 
-            hashflagsContainer.CreateIfNotExists();
+            hashflagsContainer.CreateIfNotExistsAsync();
 
             var imageBlob = hashflagsContainer.GetBlockBlobReference(hf.Value);
             imageBlob.Properties.ContentType = "image/png";
@@ -27,7 +27,7 @@ namespace hashflags
             using (var client = new WebClient())
             {
                 var image = client.DownloadData(new Uri(hf.Value));
-                imageBlob.UploadFromByteArray(image, 0, image.Length);
+                imageBlob.UploadFromByteArrayAsync(image, 0, image.Length);
             }
 
             createHeroCollector.Add(hf);

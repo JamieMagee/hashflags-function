@@ -42,7 +42,7 @@ namespace hashflags
             );
 
             blob.Properties.ContentType = "application/json";
-            blob.UploadText(hashflags.ToString(Formatting.None), Encoding.UTF8);
+            blob.UploadTextAsync(hashflags.ToString(Formatting.None));
         }
     }
 }

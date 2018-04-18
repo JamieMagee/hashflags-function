@@ -46,7 +46,7 @@ namespace hashflags
             font = GetAdjustedFont(graphics, hashtag, font, 800, 72, 36);
 
             var textSize = graphics.MeasureString(hashtag, font);
-            var horizontalMargin = isRtl ? 
+            var horizontalMargin = isRtl ?
                 (imageWidth - textSize.Width + hashflagSize) / 2 :
                 (imageWidth - textSize.Width - hashflagSize) / 2;
             var verticalMargin = (imageHeight - textSize.Height) / 2;
@@ -59,10 +59,10 @@ namespace hashflags
 
             DrawHashFlag(ref graphics, hf.Value, isRtl, horizontalMargin, textSize, hashflagsContainer);
 
-            heroContainer.CreateIfNotExists();
+            heroContainer.CreateIfNotExistsAsync();
             var heroBlob = heroContainer.GetBlockBlobReference(hf.Key);
             heroBlob.Properties.ContentType = "image/png";
-            heroBlob.UploadFromStream(ToStream(img));
+            heroBlob.UploadFromStreamAsync(ToStream(img));
             tweetCollector.Add(hf);
         }
 
@@ -100,7 +100,7 @@ namespace hashflags
         private static Font GetAdjustedFont(Graphics graphics, string hashtag, Font originalFont, int maxWidth,
             int maxFontSize, int minFontSize)
         {
-            // We utilize MeasureString which we get via a control instance           
+            // We utilize MeasureString which we get via a control instance
             for (var adjustedSize = maxFontSize; adjustedSize >= minFontSize; adjustedSize--)
             {
                 var testFont = new Font(originalFont.Name, adjustedSize, originalFont.Style);
@@ -119,7 +119,7 @@ namespace hashflags
         {
             using (var stream = new MemoryStream())
             {
-                hashflagsContainer.GetBlockBlobReference(hashtagPath).DownloadToStream(stream);
+                hashflagsContainer.GetBlockBlobReference(hashtagPath).DownloadRangeToStreamAsync(stream, null, null);
                 var hashflagImage = Image.FromStream(stream);
 
                 float xCoord;

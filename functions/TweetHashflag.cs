@@ -24,7 +24,7 @@ namespace hashflags
             log.Info($"Function executed at: {DateTime.Now}");
 
             var queue = FetchQueue();
-            var message = queue.GetMessage();
+            var message = queue.GetMessageAsync().Result;
             if (message == null) return;
             var messageDict = message.AsString.ConvertJsonTo<Dictionary<string, string>>();
             var hf = new KeyValuePair<string, string>(messageDict["Key"], messageDict["Value"]);
@@ -35,7 +35,7 @@ namespace hashflags
             using (var stream = new MemoryStream())
             {
                 var hashflagBlob = heroContainer.GetBlockBlobReference(hf.Key);
-                hashflagBlob.DownloadToStream(stream);
+                hashflagBlob.DownloadToStreamAsync(stream);
                 media = Auth.ExecuteOperationWithCredentials(authenticatedUser.Credentials,
                     () => Upload.UploadImage(stream.ToArray()));
             }
@@ -44,7 +44,7 @@ namespace hashflags
             {
                 Medias = new List<IMedia> {media}
             });
-            queue.DeleteMessage(message);
+            queue.DeleteMessageAsync(message);
         }
 
         private static IAuthenticatedUser InitialiseTwitter()

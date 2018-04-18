@@ -25,15 +25,15 @@ namespace hashflags
         {
             log.Info($"Function executed at: {DateTime.Now}");
 
-            var initDataJson = initDataBlob.DownloadText(Encoding.UTF8);
+            var initDataJson = initDataBlob.DownloadTextAsync().Result;
             var initData = JObject.Parse(initDataJson);
             var activeHashflags = initData["activeHashflags"].ToObject<Dictionary<string, string>>();
 
-            table.CreateIfNotExists();
+            table.CreateIfNotExistsAsync();
 
             var tableQuery =
                 new TableQuery<HashFlag>().Where(TableQuery.GenerateFilterCondition("PartitionKey", "eq", "active"));
-            var previousHashflags = table.ExecuteQuery(tableQuery);
+            var previousHashflags = table.ExecuteQuerySegmentedAsync(tableQuery, null).Result;
 
             var previousHashtags = previousHashflags.Select(x => x.HashTag);
             var currentHashtags = activeHashflags.Select(x => x.Key);
@@ -71,8 +71,8 @@ namespace hashflags
                 LastSeen = DateTime.Now.Date
             });
 
-            table.Execute(delete);
-            table.Execute(insert);
+            table.ExecuteAsync(delete);
+            table.ExecuteAsync(insert);
         }
 
         private static void InsertNew(KeyValuePair<string, string> hf, CloudTable table)
@@ -87,7 +87,7 @@ namespace hashflags
                 LastSeen = DateTime.Now.Date
             });
 
-            table.Execute(insert);
+            table.ExecuteAsync(insert);
         }
     }
 
