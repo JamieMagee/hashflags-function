@@ -2,19 +2,21 @@ version: 1.0.{build}
 image: Visual Studio 2017
 configuration: Release
 before_build:
-- ps: nuget restore
+  - cmd: dotnet restore --verbosity m
 build:
   verbosity: minimal
+build_script:
+  - cmd: dotnet publish
 artifacts:
-- path: hashflags\bin\Release\net461
-  name: Functions
+  - path: bin\Debug\netstandard2.0
+    name: Functions
 deploy:
-- provider: WebDeploy
-  server: https://hashflags.scm.azurewebsites.net:443/msdeploy.axd?site=hashflags
-  website: hashflags
-  username: $hashflags
-  password:
-    secure: xWMNwBAWKa2yzTsOQoQ3PrA+8haHYcbv7r/fLMHY1+++7toyj3buVOLmuvtYuz1vIibqXr+y3mINKPeA7EzQtg==
-  artifact: Functions
-  on:
-    branch: master
+  - provider: WebDeploy
+    server: https://hashflags.scm.azurewebsites.net:443/msdeploy.axd?site=hashflags
+    website: hashflags
+    username: $hashflags
+    password:
+      secure: xWMNwBAWKa2yzTsOQoQ3PrA+8haHYcbv7r/fLMHY1+++7toyj3buVOLmuvtYuz1vIibqXr+y3mINKPeA7EzQtg==
+    artifact: Functions
+    on:
+      branch: master
