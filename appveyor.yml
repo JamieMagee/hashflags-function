@@ -8,7 +8,7 @@ build:
 build_script:
   - cmd: dotnet publish
 artifacts:
-  - path: bin\Debug\netstandard2.0
+  - path: bin\Release\netstandard2.0
     name: Functions
 deploy:
   - provider: WebDeploy
