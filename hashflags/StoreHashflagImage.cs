@@ -9,8 +9,6 @@ namespace hashflags
 {
     public static class StoreHashflagImage
     {
-        private const string BaseUrl = "https://abs.twimg.com/hashflags/";
-
         [FunctionName("StoreHashflagImage")]
         [StorageAccount("AzureWebJobsStorage")]
         public static void Run(
@@ -28,7 +26,7 @@ namespace hashflags
 
             using (var client = new WebClient())
             {
-                var image = client.DownloadData(new Uri(BaseUrl + hf.Value));
+                var image = client.DownloadData(new Uri(hf.Value));
                 imageBlob.UploadFromByteArray(image, 0, image.Length);
             }
 

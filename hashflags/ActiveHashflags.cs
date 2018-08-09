@@ -38,7 +38,6 @@ namespace hashflags
             log.Info($"There are currently {((JObject) initData["activeHashflags"]).Count} active hashflags");
 
             var hashflags = new JObject(
-                new JProperty("hashflagBaseUrl", initData["hashflagBaseUrl"]),
                 new JProperty("activeHashflags", initData["activeHashflags"])
             );
 
