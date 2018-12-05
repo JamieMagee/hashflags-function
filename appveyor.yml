@@ -6,7 +6,7 @@ before_build:
 build:
   verbosity: minimal
 artifacts:
-- path: hashflags\bin\Release\net461
+- path: hashflags\bin\Release\net472
   name: Functions
 deploy:
 - provider: WebDeploy
