@@ -37,7 +37,7 @@ namespace hashflags
                 var hashflagBlob = heroContainer.GetBlockBlobReference(hf.Key);
                 hashflagBlob.DownloadToStream(stream);
                 media = Auth.ExecuteOperationWithCredentials(authenticatedUser.Credentials,
-                    () => Upload.UploadImage(stream.ToArray()));
+                    () => Upload.UploadBinary(stream.ToArray()));
             }
 
             authenticatedUser.PublishTweet('#' + hf.Key, new PublishTweetOptionalParameters
