@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Host;
+using Microsoft.Extensions.Logging;
 using Microsoft.WindowsAzure.Storage.Blob;
 using Microsoft.WindowsAzure.Storage.Table;
 using Newtonsoft.Json.Linq;
@@ -21,9 +22,9 @@ namespace hashflags
             CloudBlockBlob initDataBlob,
             [Table("hashflags")] CloudTable table,
             [Queue("save-hashflags")] ICollector<KeyValuePair<string, string>> saveHashflagsCollector,
-            TraceWriter log)
+            ILogger log)
         {
-            log.Info($"Function executed at: {DateTime.Now}");
+            log.LogInformation($"Function executed at: {DateTime.Now}");
 
             var initDataJson = initDataBlob.DownloadTextAsync().Result;
             var initData = JObject.Parse(initDataJson);
@@ -38,20 +39,20 @@ namespace hashflags
             var previousHashtags = previousHashflags.Select(x => x.HashTag);
             var currentHashtags = activeHashflags.Select(x => x.Key);
 
-            log.Info($"previous Hashtags: {previousHashtags.Count()}");
-            log.Info($"current Hashtags: {currentHashtags.Count()}");
+            log.LogInformation($"previous Hashtags: {previousHashtags.Count()}");
+            log.LogInformation($"current Hashtags: {currentHashtags.Count()}");
 
 
             foreach (var entry in previousHashtags.Except(currentHashtags))
             {
-                log.Info($"INACTIVE: {entry}");
+                log.LogInformation($"INACTIVE: {entry}");
                 var hf = previousHashflags.First(x => x.HashTag == entry);
                 MovePartition(hf, table);
             }
 
             foreach (var entry in currentHashtags.Except(previousHashtags))
             {
-                log.Info($"NEW: {entry}");
+                log.LogInformation($"NEW: {entry}");
                 var hf = activeHashflags.First(x => x.Key == entry);
                 InsertNew(hf, table);
                 saveHashflagsCollector.Add(hf);

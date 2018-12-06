@@ -3,13 +3,14 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <AzureFunctionsVersion>v2</AzureFunctionsVersion>
   </PropertyGroup>
-  <ItemGroup>
-    <PackageReference Include="CoreCompat.System.Drawing.v2" Version="5.2.0-preview1-r131" />
-    <PackageReference Include="HtmlAgilityPack" Version="1.7.1" />
-    <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="1.0.13" />
-    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
-    <PackageReference Include="System.Linq.Queryable" Version="4.3.0" />
-    <PackageReference Include="TweetinviAPI" Version="2.1.0" />
+  <ItemGroup>    
+    <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.Storage" Version="3.0.2" />
+    <PackageReference Include="System.Drawing.Common" Version="4.5.1" />
+    <PackageReference Include="HtmlAgilityPack" Version="1.7.1" />    
+    <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="1.0.24" />
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+    <PackageReference Include="System.Linq.Queryable" Version="4.3.0" />    
+    <PackageReference Include="TweetinviAPI" Version="2.1.0" />    
   </ItemGroup>
   <ItemGroup>
     <None Update="host.json">

@@ -8,6 +8,7 @@ using System.IO;
 using System.Text.RegularExpressions;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Host;
+using Microsoft.Extensions.Logging;
 using Microsoft.WindowsAzure.Storage.Blob;
 
 namespace hashflags
@@ -21,9 +22,9 @@ namespace hashflags
             [Blob("heroimages")] CloudBlobContainer heroContainer,
             [Blob("hashflags")] CloudBlobContainer hashflagsContainer,
             [Queue("tweet")] ICollector<KeyValuePair<string, string>> tweetCollector,
-            TraceWriter log)
+            ILogger log)
         {
-            log.Info($"Function executed at: {DateTime.Now}");
+            log.LogInformation($"Function executed at: {DateTime.Now}");
 
             var hashtag = '#' + hf.Key;
             var isRtl = IsRtl(hf.Key);

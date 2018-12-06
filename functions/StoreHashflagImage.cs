@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Host;
+using Microsoft.Extensions.Logging;
 using Microsoft.WindowsAzure.Storage.Blob;
 
 namespace hashflags
@@ -15,9 +16,9 @@ namespace hashflags
             [QueueTrigger("save-hashflags")] KeyValuePair<string, string> hf,
             [Blob("hashflags")] CloudBlobContainer hashflagsContainer,
             [Queue("create-hero")] ICollector<KeyValuePair<string, string>> createHeroCollector,
-            TraceWriter log)
+            ILogger log)
         {
-            log.Info($"Function executed at: {DateTime.Now}");
+            log.LogInformation($"Function executed at: {DateTime.Now}");
 
             hashflagsContainer.CreateIfNotExistsAsync();
 

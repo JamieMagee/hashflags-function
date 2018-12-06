@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Host;
+using Microsoft.Extensions.Logging;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
 using Microsoft.WindowsAzure.Storage.Queue;
@@ -19,9 +20,9 @@ namespace hashflags
         public static void Run(
             [TimerTrigger("0 * * * * *")] TimerInfo timer,
             [Blob("heroimages")] CloudBlobContainer heroContainer,
-            TraceWriter log)
+            ILogger log)
         {
-            log.Info($"Function executed at: {DateTime.Now}");
+            log.LogInformation($"Function executed at: {DateTime.Now}");
 
             var queue = FetchQueue();
             var message = queue.GetMessageAsync().Result;
