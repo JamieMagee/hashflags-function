@@ -4,7 +4,7 @@
   </PropertyGroup>
   <ItemGroup>    
     <PackageReference Include="HtmlAgilityPack" Version="1.9.0" />    
-    <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="1.0.24" />    
+    <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="1.0.25" />    
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />    
     <PackageReference Include="TweetinviAPI" Version="4.0.0" />
   </ItemGroup>
