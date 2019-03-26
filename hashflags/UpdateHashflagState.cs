@@ -83,7 +83,7 @@ namespace hashflags
             var insert = TableOperation.Insert(new HashFlag
             {
                 PartitionKey = "active",
-                RowKey = hf.Key + hf.Value.Replace('/', '_').Split('.')[0],
+                RowKey = hf.Key + rowKey,
                 HashTag = hf.Key,
                 Path = hf.Value,
                 FirstSeen = DateTime.Now.Date,
