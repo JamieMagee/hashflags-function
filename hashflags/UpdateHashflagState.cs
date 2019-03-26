@@ -77,6 +77,9 @@ namespace hashflags
 
         private static void InsertNew(KeyValuePair<string, string> hf, CloudTable table)
         {
+            var urlParts = hf.Value.Split('/');
+            var rowKey = String.Join("", new ArraySegment<string>(urlParts, urlParts.Length - 2, 2)).Split('.')[0];
+
             var insert = TableOperation.Insert(new HashFlag
             {
                 PartitionKey = "active",
