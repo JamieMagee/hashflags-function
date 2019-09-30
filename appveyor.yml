@@ -1,12 +1,12 @@
 version: 1.0.{build}
-image: Visual Studio 2017
+image: Visual Studio 2019
 configuration: Release
 before_build:
 - ps: nuget restore
 build:
   verbosity: minimal
 artifacts:
-- path: hashflags\bin\Release\net461
+- path: hashflags\bin\Release\net472
   name: Functions
 deploy:
 - provider: WebDeploy
