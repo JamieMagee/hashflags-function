@@ -6,6 +6,7 @@ using Microsoft.Azure.WebJobs.Host;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
 using Microsoft.WindowsAzure.Storage.Queue;
+using Newtonsoft.Json.Linq;
 using Tweetinvi;
 using Tweetinvi.Models;
 using Tweetinvi.Parameters;
@@ -26,7 +27,7 @@ namespace hashflags
             var queue = FetchQueue();
             var message = queue.GetMessage();
             if (message == null) return;
-            var messageDict = message.AsString.ConvertJsonTo<Dictionary<string, string>>();
+            var messageDict = JObject.Parse(message.AsString).ToObject<Dictionary<string, string>>();
             var hf = new KeyValuePair<string, string>(messageDict["Key"], messageDict["Value"]);
 
             var authenticatedUser = InitialiseTwitter();

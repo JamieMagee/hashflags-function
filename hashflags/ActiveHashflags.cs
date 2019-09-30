@@ -1,14 +1,13 @@
 using System;
 using System.IO;
-using System.Net;
 using System.Net.Http;
-using System.Text;
-using HtmlAgilityPack;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Host;
 using Microsoft.WindowsAzure.Storage.Blob;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Linq;
+using System.Text;
+using Newtonsoft.Json;
 
 namespace hashflags
 {
@@ -24,25 +23,21 @@ namespace hashflags
         {
             log.Info($"Function executed at: {DateTime.Now}");
 
+            var timeString = DateTime.UtcNow.ToString("yyyy-MM-dd-HH");
+
             var client = new HttpClient();
-            var response = client.GetAsync("https://twitter.com/").Result;
+            var response = client.GetAsync($"https://pbs.twimg.com/hashflag/config-{timeString}.json").Result;
             var content = response.Content.ReadAsStringAsync().Result;
+            var hashflagConfig = JArray.Parse(content).GroupBy(c => c["hashtag"]).Select(c => c.First()).ToList();
 
-            var doc = new HtmlDocument();
-            doc.LoadHtml(content);
+            log.Info($"There are currently {hashflagConfig.Count} active hashflags");
 
-            var initDataInput = doc.DocumentNode.SelectSingleNode("//*[@id=\"init-data\"]");
-            var initDataJson = WebUtility.HtmlDecode(initDataInput.GetAttributeValue("value", ""));
-            var initData = JObject.Parse(initDataJson);
-
-            log.Info($"There are currently {((JObject) initData["activeHashflags"]).Count} active hashflags");
-
-            var hashflags = new JObject(
-                new JProperty("activeHashflags", initData["activeHashflags"])
+            var hashflags = hashflagConfig.Select(c =>
+                new JProperty(c["hashtag"].ToString(), c["assetUrl"])
             );
 
             blob.Properties.ContentType = "application/json";
-            blob.UploadText(hashflags.ToString(Formatting.None), Encoding.UTF8);
+            blob.UploadText(new JObject(hashflags).ToString(Formatting.None), Encoding.UTF8);
         }
     }
 }

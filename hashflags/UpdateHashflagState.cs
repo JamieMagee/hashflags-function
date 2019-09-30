@@ -7,6 +7,7 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Host;
 using Microsoft.WindowsAzure.Storage.Blob;
 using Microsoft.WindowsAzure.Storage.Table;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace hashflags
@@ -23,14 +24,12 @@ namespace hashflags
             [Queue("save-hashflags")] ICollector<KeyValuePair<string, string>> saveHashflagsCollector,
             TraceWriter log)
         {
-            log.Info($"Function executed at: {DateTime.Now}");
+            log.Info($"Function executed at: {DateTime.UtcNow}");
 
-            var initDataJson = initDataBlob.DownloadText(Encoding.UTF8);
-            var initData = JObject.Parse(initDataJson);
-            var activeHashflags = initData["activeHashflags"].ToObject<Dictionary<string, string>>();
+            var activeHashflagsString = initDataBlob.DownloadText(Encoding.UTF8);
+            var activeHashflags = JObject.Parse(activeHashflagsString).ToObject<Dictionary<string, string>>();
 
             table.CreateIfNotExists();
-
             var tableQuery =
                 new TableQuery<HashFlag>().Where(TableQuery.GenerateFilterCondition("PartitionKey", "eq", "active"));
             var previousHashflags = table.ExecuteQuery(tableQuery);
@@ -68,7 +67,7 @@ namespace hashflags
                 HashTag = hf.HashTag,
                 Path = hf.Path,
                 FirstSeen = hf.FirstSeen,
-                LastSeen = DateTime.Now.Date
+                LastSeen = DateTime.UtcNow.Date
             });
 
             table.Execute(delete);
@@ -78,16 +77,16 @@ namespace hashflags
         private static void InsertNew(KeyValuePair<string, string> hf, CloudTable table)
         {
             var urlParts = hf.Value.Split('/');
-            var rowKey = String.Join("", new ArraySegment<string>(urlParts, urlParts.Length - 2, 2)).Split('.')[0];
+            var rowKey = string.Join("", new ArraySegment<string>(urlParts, urlParts.Length - 2, 2)).Split('.')[0];
 
-            var insert = TableOperation.Insert(new HashFlag
+            var insert = TableOperation.InsertOrReplace(new HashFlag
             {
                 PartitionKey = "active",
                 RowKey = hf.Key + rowKey,
                 HashTag = hf.Key,
                 Path = hf.Value,
-                FirstSeen = DateTime.Now.Date,
-                LastSeen = DateTime.Now.Date
+                FirstSeen = DateTime.UtcNow.Date,
+                LastSeen = DateTime.UtcNow.Date
             });
 
             table.Execute(insert);
