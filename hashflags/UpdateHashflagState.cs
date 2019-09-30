@@ -60,7 +60,7 @@ namespace hashflags
         private static void MovePartition(HashFlag hf, CloudTable table)
         {
             var delete = TableOperation.Delete(hf);
-            var insert = TableOperation.Insert(new HashFlag
+            var insert = TableOperation.InsertOrReplace(new HashFlag
             {
                 PartitionKey = "inactive",
                 RowKey = hf.RowKey,
