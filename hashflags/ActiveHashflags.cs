@@ -28,7 +28,7 @@ namespace hashflags
             var client = new HttpClient();
             var response = client.GetAsync($"https://pbs.twimg.com/hashflag/config-{timeString}.json").Result;
             var content = response.Content.ReadAsStringAsync().Result;
-            var hashflagConfig = JArray.Parse(content).GroupBy(c => c["hashtag"]).Select(c => c.First()).ToList();
+            var hashflagConfig = JArray.Parse(content).GroupBy(c => c["hashtag"].ToString().Trim()).Select(c => c.First()).ToList();
 
             log.Info($"There are currently {hashflagConfig.Count} active hashflags");
 
