@@ -1,7 +1,7 @@
 # Twitter Hashflags Azure Functions
 
-[![Build status](https://ci.appveyor.com/api/projects/status/sqp33i4dv7jnoqc7?svg=true)](https://ci.appveyor.com/project/JamieMagee/hashflags-function)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/JamieMagee/hashflags-function/Build%20and%20Deploy?style=for-the-badge)
+[![MIT license](https://img.shields.io/badge/license-MIT-blue.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
 
 This git reposistory contains a collection of Azure functions related to Twitter [hashflags](http://hashfla.gs/). Currently there are 5 functions:
 
@@ -27,3 +27,7 @@ The aim of this project is to allow people to use hashflags outside of Twitter, 
 ## What's the architecture of the functions?
 
 ![Architectural diagram of the functions](images/architecture.svg)
+
+## Credits
+
+If you like this follow [@Jamie_Magee](https://twitter.com/Jamie_Magee) on Twitter.
