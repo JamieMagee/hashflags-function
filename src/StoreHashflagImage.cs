@@ -1,25 +1,26 @@
 using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Threading.Tasks;
 using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Host;
+using Microsoft.Extensions.Logging;
 using Microsoft.WindowsAzure.Storage.Blob;
 
-namespace hashflags
+namespace Hashflags
 {
     public static class StoreHashflagImage
     {
         [FunctionName("StoreHashflagImage")]
         [StorageAccount("AzureWebJobsStorage")]
-        public static void Run(
+        public static async Task Run(
             [QueueTrigger("save-hashflags")] KeyValuePair<string, string> hf,
             [Blob("hashflags")] CloudBlobContainer hashflagsContainer,
             [Queue("create-hero")] ICollector<KeyValuePair<string, string>> createHeroCollector,
-            TraceWriter log)
+            ILogger log)
         {
-            log.Info($"Function executed at: {DateTime.Now}");
+            log.LogInformation($"Function executed at: {DateTime.Now}");
 
-            hashflagsContainer.CreateIfNotExists();
+            await hashflagsContainer.CreateIfNotExistsAsync();
 
             var imageBlob = hashflagsContainer.GetBlockBlobReference(hf.Value);
             imageBlob.Properties.ContentType = "image/png";
@@ -27,7 +28,7 @@ namespace hashflags
             using (var client = new WebClient())
             {
                 var image = client.DownloadData(new Uri(hf.Value));
-                imageBlob.UploadFromByteArray(image, 0, image.Length);
+                await imageBlob.UploadFromByteArrayAsync(image, 0, image.Length);
             }
 
             createHeroCollector.Add(hf);

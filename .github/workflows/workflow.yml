@@ -1,0 +1,53 @@
+name: Build and Deploy
+env:
+  OUTPUT_PATH: ${{ github.workspace }}/.output
+  DOTNET_VERSION: '3.1.102'
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@v2
+
+      - name: Setup Dotnet ${{ env.DOTNET_VERSION }}
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Publish functions
+        run: dotnet publish --configuration Release --output ${{ env.OUTPUT_PATH }}
+
+      - name: Package functions
+        uses: actions/upload-artifact@v1
+        with:
+          name: functions
+          path: ${{ env.OUTPUT_PATH }}
+
+  deploy:
+    runs-on: windows-latest
+    needs: [build]
+    env:
+      FUNC_APP_NAME: hashflags
+    steps:
+      - name: Download website
+        uses: actions/download-artifact@v1
+        with:
+          name: functions
+          path: ${{ env.OUTPUT_PATH }}
+
+      - name: 'Login via Azure CLI'
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: 'Run Azure Functions Action'
+        uses: Azure/functions-action@v1
+        with:
+          app-name: ${{ env.FUNC_APP_NAME }}
+          package: ${{ env.OUTPUT_PATH }}
