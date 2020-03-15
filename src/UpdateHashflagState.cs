@@ -31,7 +31,15 @@ namespace Hashflags
             await table.CreateIfNotExistsAsync();
             var tableQuery =
                 new TableQuery<HashFlag>().Where(TableQuery.GenerateFilterCondition("PartitionKey", "eq", "active"));
-            var previousHashflags = await table.ExecuteQuerySegmentedAsync(tableQuery, null);
+            var previousHashflags = new List<HashFlag>();
+            TableContinuationToken? token = null;
+
+            do
+            {
+                var segment = await table.ExecuteQuerySegmentedAsync(tableQuery, token);
+                token = segment.ContinuationToken;
+                previousHashflags.AddRange(segment.Results);
+            } while (token != null);
 
             var previousHashtags = previousHashflags.Select(x => x.HashTag);
             var currentHashtags = activeHashflags.Select(x => x.Key);
