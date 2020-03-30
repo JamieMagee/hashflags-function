@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.Azure.WebJobs;
@@ -40,7 +41,10 @@ namespace Hashflags
 
             #region hashtag
 
-            using var tf = SKFontManager.CreateDefault().MatchCharacter(FontFamily, hf.Key[0]);
+            var typefaces = hf.Key.Select(character => SKFontManager.CreateDefault().MatchCharacter(FontFamily, character)).ToList();
+
+            using var tf = typefaces.FirstOrDefault(t => t.FamilyName != FontFamily) ??
+                           SKTypeface.FromFamilyName(FontFamily);
             using var shaper = new SKShaper(tf);
 
             var paint = new SKPaint

@@ -21,7 +21,7 @@ jobs:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
       - name: Publish functions
-        run: dotnet publish --configuration Release --output ${{ env.OUTPUT_PATH }} src
+        run: dotnet publish --configuration Release --output ${{ env.OUTPUT_PATH }} src/Hashflags
 
       - name: Package functions
         uses: actions/upload-artifact@v1
