@@ -1,7 +1,6 @@
 name: Build and Deploy
 env:
   OUTPUT_PATH: ${{ github.workspace }}/.output
-  DOTNET_VERSION: '3.1.102'
 
 on:
   push:
@@ -14,11 +13,6 @@ jobs:
     steps:
       - name: 'Checkout'
         uses: actions/checkout@v2
-
-      - name: Setup Dotnet ${{ env.DOTNET_VERSION }}
-        uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: ${{ env.DOTNET_VERSION }}
 
       - name: Publish functions
         run: dotnet publish --configuration Release --output ${{ env.OUTPUT_PATH }} src/Hashflags
