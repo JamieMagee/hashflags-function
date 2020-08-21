@@ -13,6 +13,9 @@ jobs:
     steps:
       - name: 'Checkout'
         uses: actions/checkout@v2
+        
+      - name: Test functions
+        run: dotnet test --configuration Release src/Hashflags.Tests
 
       - name: Publish functions
         run: dotnet publish --configuration Release --output ${{ env.OUTPUT_PATH }} src/Hashflags
