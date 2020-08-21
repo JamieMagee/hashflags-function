@@ -6,6 +6,9 @@ on:
   push:
     branches:
       - master
+  pull_request:
+    branches:
+      - master
 
 jobs:
   build:
@@ -28,7 +31,8 @@ jobs:
 
   deploy:
     runs-on: windows-latest
-    needs: [build]
+    needs: build
+    if: github.ref == 'refs/heads/master'
     env:
       FUNC_APP_NAME: hashflags
     steps:
