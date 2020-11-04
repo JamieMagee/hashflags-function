@@ -24,7 +24,7 @@ jobs:
         run: dotnet publish --configuration Release --output ${{ env.OUTPUT_PATH }} src/Hashflags
 
       - name: Package functions
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v2
         with:
           name: functions
           path: ${{ env.OUTPUT_PATH }}
