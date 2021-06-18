@@ -8,7 +8,7 @@
     <RootNamespace>Hashflags</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="HarfBuzzSharp.NativeAssets.Linux" Version="2.6.1.6" />
+    <PackageReference Include="HarfBuzzSharp.NativeAssets.Linux" Version="2.6.1.7" />
     <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.Storage" Version="3.0.11" />
     <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="3.0.13" />
     <PackageReference Include="SkiaSharp.HarfBuzz" Version="2.80.2" />
