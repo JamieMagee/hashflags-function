@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26124.0
 MinimumVisualStudioVersion = 15.0.26124.0
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hashflags", "Hashflags\Hashflags.csproj", "{4F48CB4A-CCC9-42A6-AAD1-BB7EC91F87A5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hashflags", "src\Hashflags\Hashflags.csproj", "{4F48CB4A-CCC9-42A6-AAD1-BB7EC91F87A5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hashflags.Tests", "Hashflags.Tests\Hashflags.Tests.csproj", "{BD62830A-FF62-4D11-8BE4-F386066740C9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hashflags.Tests", "src\Hashflags.Tests\Hashflags.Tests.csproj", "{BD62830A-FF62-4D11-8BE4-F386066740C9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
