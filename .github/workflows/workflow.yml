@@ -17,6 +17,10 @@ jobs:
       - name: 'Checkout'
         uses: actions/checkout@v2
         
+      - uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '6.0.x'
+        
       - name: Test functions
         run: dotnet test --configuration Release src/Hashflags.Tests
 
