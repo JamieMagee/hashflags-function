@@ -1,37 +1,34 @@
 using System;
 using System.Collections.Generic;
-using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
+using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
-using Microsoft.WindowsAzure.Storage.Blob;
 
-namespace Hashflags
+namespace Hashflags;
+
+public static class StoreHashflagImage
 {
-    public static class StoreHashflagImage
+    [FunctionName("StoreHashflagImage")]
+    [StorageAccount("AzureWebJobsStorage")]
+    public static async Task Run(
+        [QueueTrigger("save-hashflags")] KeyValuePair<string, string> hf,
+        [Blob("hashflags")] BlobContainerClient hashflagsContainerClient,
+        [Queue("create-hero")] ICollector<KeyValuePair<string, string>> createHeroCollector,
+        ILogger log)
     {
-        [FunctionName("StoreHashflagImage")]
-        [StorageAccount("AzureWebJobsStorage")]
-        public static async Task Run(
-            [QueueTrigger("save-hashflags")] KeyValuePair<string, string> hf,
-            [Blob("hashflags")] CloudBlobContainer hashflagsContainer,
-            [Queue("create-hero")] ICollector<KeyValuePair<string, string>> createHeroCollector,
-            ILogger log)
-        {
-            log.LogInformation($"Function executed at: {DateTime.Now}");
+        log.LogInformation($"Function executed at: {DateTime.Now}");
 
-            await hashflagsContainer.CreateIfNotExistsAsync();
+        await hashflagsContainerClient.CreateIfNotExistsAsync();
 
-            var imageBlob = hashflagsContainer.GetBlockBlobReference(hf.Value);
-            imageBlob.Properties.ContentType = "image/png";
+        var imageClient = hashflagsContainerClient.GetBlobClient(hf.Value);
 
-            using (var client = new WebClient())
-            {
-                var image = client.DownloadData(new Uri(hf.Value));
-                await imageBlob.UploadFromByteArrayAsync(image, 0, image.Length);
-            }
+        using var client = new HttpClient();
+        var image = await client.GetStreamAsync(new Uri(hf.Value));
+        await imageClient.UploadAsync(image, new BlobHttpHeaders { ContentType = "image/png" });
 
-            createHeroCollector.Add(hf);
-        }
+        createHeroCollector.Add(hf);
     }
 }
