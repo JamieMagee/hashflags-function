@@ -15,7 +15,7 @@ jobs:
     runs-on: windows-latest
     steps:
       - name: 'Checkout'
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         
       - name: Test functions
         run: dotnet test --configuration Release src/Hashflags.Tests
