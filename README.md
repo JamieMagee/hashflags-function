@@ -1,6 +1,6 @@
 # Twitter Hashflags Azure Functions
 
-![GitHub Workflow Status](https://img.shields.io/github/workflow/status/JamieMagee/hashflags-function/Build%20and%20Deploy?style=for-the-badge)
+![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/JamieMagee/hashflags-function/workflow.yml?branch-main&style=for-the-badge)
 [![MIT license](https://img.shields.io/badge/license-MIT-blue.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
 
 This git reposistory contains a collection of Azure functions related to Twitter [hashflags](http://hashfla.gs/). Currently there are 5 functions:
