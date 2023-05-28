@@ -43,7 +43,7 @@ jobs:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: 'Run Azure Functions Action'
-        uses: Azure/functions-action@f438ecccd1b168da358efe9a8b732da92b28dba5 # tag=v1
+        uses: Azure/functions-action@a7e1e59a4c0e4fac3a57f58a7ac3ece626d4a8a3 # v1
         with:
           app-name: ${{ env.FUNC_APP_NAME }}
           package: ${{ env.OUTPUT_PATH }}
